@@ -51,7 +51,7 @@
   - _Requirements: 1.3_
   - _Depends on: 3_
 
-- [x] 5. 组件级数据源与数据加工（`SQL09091542`）
+- [ ] 5. 组件级数据源与数据加工（`SQL09091542`）
   - Files: `DataView_布局文件[0-统计看板].dv.json`（`#card7.option.sources[0]`）
   - 新增元素级 source：`source: 'SQL09091542'`（现有 DATAMETA_DB 查询，**无需服务端新开发**）、`type:'common'`、`map:false`、`interval:'${constant.RefreshHzForAmr}'`。`preHandler` 内联迁移 `beforeSourceQuery_1` 取参逻辑：读 `#select0` → `mapcodes`（`ALL/all` 归一 null，多值逗号分隔照传）、`#select1` → `date` 写 `$model`（`SQL09091542` 入参仅 `mapcodes`/`robotcodes`，`robotcodes` 不传即查全车；`date` 仅入模型供点击参数用）；作用域用 `this.$container.$component`。`postHandler` 实现：
     1. **归一化**：每行映射为前端契约 `{amr_code: row.robot_code, status: 中文}`；`status2` 代码→中文（`0`→离线、`1`→运行、`2`→充电、`3`→空闲、`4`→异常，参考手册 §1.4）。

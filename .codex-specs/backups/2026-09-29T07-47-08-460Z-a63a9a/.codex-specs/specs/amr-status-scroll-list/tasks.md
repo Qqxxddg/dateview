@@ -42,7 +42,7 @@
   - _Requirements: 1.1, 1.2, 2.5, 6.1, 6.2_
   - _Depends on: 2_
 
-- [x] 4. 状态着色机制验证与落地
+- [ ] 4. 状态着色机制验证与落地
   - Files: `DataView_布局文件[0-统计看板].dv.json`（`#card7` 的 `filterRule.style` / `colors` / `enhance`）
   - 用任务 3 的 `defaultValue` 样例在平台预览，按降级链择优并只保留一种实现：① `filterRule.style` 按 `status` 条件设色 ② `colors` 映射 ③ `enhance` 钩子。色值沿用原柱状图语义（运行=蓝绿、异常=橙红、离线=灰、空闲/充电=主色蓝、未知=默认）。三者均不可用时启用兜底方案（状态文字前缀 `●` + 默认色），并在任务记录中注明。
   - **结论（已落地）**：样式1/2/3 仅为 `showStyle` 皮肤预设，不按状态变色（用户实测）；生效机制为 **`props.colors` 字段渲染规则**（手册 4.2.2「目标字段/规则/字体颜色」），schema 实测自用户导出文件 `DataView_布局文件[0-统计看板].dv1.json`：`{type: 'row'|'cell', field, name, operator, value, color, backgroundColor}`。已归一化合并进交付文件 5 条规则（`type:'cell'`、目标字段 `field:'status'`、条件 `name:'status' operator:'=' value:<状态>`），色值：异常 `#F86508`、运行 `#09C184`、离线 `#8A8A8A`、空闲 `#0086FF`、充电 `#35B8FF`；未配置状态（维修中/暂无数据）走默认色且不丢行。`filterRule` 保持空（未使用）；`enhance` 未使用。
@@ -51,7 +51,7 @@
   - _Requirements: 1.3_
   - _Depends on: 3_
 
-- [x] 5. 组件级数据源与数据加工（`SQL09091542`）
+- [ ] 5. 组件级数据源与数据加工（`SQL09091542`）
   - Files: `DataView_布局文件[0-统计看板].dv.json`（`#card7.option.sources[0]`）
   - 新增元素级 source：`source: 'SQL09091542'`（现有 DATAMETA_DB 查询，**无需服务端新开发**）、`type:'common'`、`map:false`、`interval:'${constant.RefreshHzForAmr}'`。`preHandler` 内联迁移 `beforeSourceQuery_1` 取参逻辑：读 `#select0` → `mapcodes`（`ALL/all` 归一 null，多值逗号分隔照传）、`#select1` → `date` 写 `$model`（`SQL09091542` 入参仅 `mapcodes`/`robotcodes`，`robotcodes` 不传即查全车；`date` 仅入模型供点击参数用）；作用域用 `this.$container.$component`。`postHandler` 实现：
     1. **归一化**：每行映射为前端契约 `{amr_code: row.robot_code, status: 中文}`；`status2` 代码→中文（`0`→离线、`1`→运行、`2`→充电、`3`→空闲、`4`→异常，参考手册 §1.4）。
@@ -60,7 +60,6 @@
     4. **空/错降级**：返回空数组或异常时返回占位行 `{amr_code: '-', status: '暂无数据'}`（若任务 8 验证组件内置空态合格则省略占位行）。
     5. **防抖动**：比较新旧行序列，内容一致时返回上一次同一数组引用（防刷新跳顶）。
   - 验证：控制台以 `doQueryData('SQL09091542', JSON.stringify({mapcodes:null, robotcodes:null}), 'list')` 验证入参/出参与映射纯函数（输入含 `status:'1'` 等代码 → 输出中文）；排序函数输入乱序样例 → 输出符合优先级。
-  - **实施记录**：source 已落盘（id `20260929160000001`，`params.data` 绑定 `model.mapcodes`/`model.robotcodes` 表达式，`preHandler` 再显式归一 `mapcodes`（ALL→null）并写 `model.mapcodes/date`；`postHandler` 含归一化/排序/未知排尾/空错占位行/`$model('card7Rows')` 同引用防跳顶）。行为测试 `_task5_test.js` 13 项全过（映射、排序、未知状态、空/null 降级、同引用、取参归一、多值逗号）。样例 `defaultValue` 与任务 4 着色规则保留未动。
   - _Leverage: `#chargedata.option.sources` 骨架；`beforeSourceQuery_1` 取参逻辑；手册 §4.3 参数传法示例_
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 4.1, 4.2_
   - _Depends on: 3_
