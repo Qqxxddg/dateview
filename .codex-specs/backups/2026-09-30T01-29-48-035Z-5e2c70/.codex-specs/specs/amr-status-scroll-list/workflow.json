@@ -4,9 +4,9 @@
   "title": "设备实时运行情况逐车滚动列表",
   "description": "将统计看板『设备实时运行情况』模块由状态汇总柱状图改为逐台车（车号+状态）文字行自动滚动展示",
   "createdAt": "2026-09-28T08:15:25.159Z",
-  "updatedAt": "2026-09-30T01:29:48.033Z",
+  "updatedAt": "2026-09-29T02:41:14.522Z",
   "kind": "spec",
-  "phase": "complete",
+  "phase": "implementation",
   "approvals": {
     "requirements": {
       "status": "approved",

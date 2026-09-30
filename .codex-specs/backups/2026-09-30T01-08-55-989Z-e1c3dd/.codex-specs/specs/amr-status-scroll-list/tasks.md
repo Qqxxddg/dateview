@@ -65,7 +65,7 @@
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 4.1, 4.2_
   - _Depends on: 3_
 
-- [x] 6. 页面脚本：新增行点击处理并清理柱状遗留函数
+- [ ] 6. 页面脚本：新增行点击处理并清理柱状遗留函数
   - Files: `DataView_布局文件[0-统计看板].dv.json`（`pages[0].script`）
   - 新增 `onCard7RowClick = (e) => {...}`：构造 `{date, ranges, starttime, endtime, mapcodes, statusName: e.status, amr_code: e.amr_code}` 写入 `sessionStorage['device-status-param']`，复用原 `onCard7Click` 的 `CmsVersion` 3/4/4.1 跳转分支；守卫 `e.status === '暂无数据'` 或行为空时不跳转。删除 `onCard7Click` 与 `beforeSourceQuery_1`（仅被退役源引用，函数删除以本任务为准）。
   - 验证：脚本中 `onCard7Click`/`beforeSourceQuery_1` 零引用；`onCard7RowClick` 出现且被元素 events 引用。
@@ -74,24 +74,21 @@
   - _Requirements: 1.6, 5.1, 5.2_
   - _Depends on: 3_
 
-- [x] 7. 退役柱状数据源并核对导出链路
+- [ ] 7. 退役柱状数据源并核对导出链路
   - Files: `DataView_布局文件[0-统计看板].dv.json`（`content.option.sources` / `pages[0].sources`、`pages[0].script` 的 `downloadCsv`）
   - 按任务 1 结论在**两份列表**中删除 `SQL1818567` 页面级 source（含 binds 柱状模板）；若任务 1 判定其中一份根本不参与运行时，两份仍都删，但任务记录注明生效列表。核对 `downloadCsv` 中 `$exportComponentData([... '#card7' ...])`：`dv-scrolltable` 支持导出则保留，否则移除 `'#card7'`。
   - 验证：`SQL1818567` 在文件中零引用；页面 JSON 可解析；`downloadCsv` 数组元素均为现存 refName。
-  - **实施记录**：`SQL1818567` 已从 `content.option.sources` 与 `pages[0].sources` 各删 1 条（生效列表为 `pages[0].sources`，见任务 1 结论），全文件 `SQL1818567` 引用数 0；两列表现各 9 条（8 旧 + 1 新 `SQL09091542`）。`downloadCsv` 的 `$exportComponentData` 五个 refName（`#effectTrend/#card6/#card7/#taskcounttrend/#taskstatus`）均对应现存元素，`#card7` 保留（dv-scrolltable 有行数据与 setData）；实际导出能力并入任务 8 清单验证。
   - _Requirements: 1.6_
   - _Depends on: 1, 5, 6_
 
-- [x] 8. 样例数据集成验证（DataView 平台预览）
+- [ ] 8. 样例数据集成验证（DataView 平台预览）
   - Files: `DataView_布局文件[0-统计看板].dv.json`（验证性，如发现问题以最小改动修复）
-  - 清单：①列表渲染为「车号|状态」两列文字行 ②行数超过可视区（约 7 行）自动向上滚动并循环 ③行数未超可视区静止 ④状态着色符合映射 ⑤未知状态原样显示 ⑥空数据显示「暂无数据」 ⑦占位行点击不跳转 ⑧样例行点击写入 `device-status-param`（含 `amr_code`）并打开 CMS ⑨连续刷新 5 分钟无闪烁、滚动不跳顶 ⑩与改造前同区域截图对比布局无错位 ⑪`downloadCsv` 导出不报错（`#card7` 在 `$exportComponentData` 中，若 scrolltable 不支持导出则从数组移除该项）。
-  - **验证记录**：用户在 DataView 平台逐项实测，**11 项全部通过**（2026-09-29）。
+  - 清单：①列表渲染为「车号|状态」两列文字行 ②行数超过可视区（约 7 行）自动向上滚动并循环 ③行数未超可视区静止 ④状态着色符合映射 ⑤未知状态原样显示 ⑥空数据显示「暂无数据」 ⑦占位行点击不跳转 ⑧样例行点击写入 `device-status-param`（含 `amr_code`）并打开 CMS ⑨连续刷新 5 分钟无闪烁、滚动不跳顶 ⑩与改造前同区域截图对比布局无错位。
   - _Requirements: 1.2, 1.4, 1.5, 2.3, 2.4, 2.5, 3.3, 5.2, 6.3_
   - _Depends on: 4, 5, 6_
 
-- [x] 9. `SQL09091542` 真实数据联调验证
+- [ ] 9. `SQL09091542` 真实数据联调验证
   - Files: `DataView_布局文件[0-统计看板].dv.json`（验证性，如发现问题以最小改动修复）
   - 无新增服务端开发依赖（`SQL09091542` 已存在）；服务端仅需保证该数据源权限可用。清单：①真实车辆行加载与滚动（车号来自 `robot_code`）②`status2` 代码→中文映射正确（抽样比对管理端查询结果与列表文字）③`#select0` 地图筛选生效（`mapcodes` 传参；`ALL` 时不筛）④`robotcodes` 不传时返回全车 ⑤刷新间隔符合 `${constant.RefreshHzForAmr}`、无闪烁跳顶 ⑥断开服务端请求显示「暂无数据」且其它模块轮询不受影响 ⑦整屏 `scale:true` 缩放下布局正确 ⑧点击行按 `CmsVersion` 正确打开 CMS ⑨运行时复核任务 1 结论（`pages[0].sources` 生效）。
-  - **验证记录**：用户在 DataView 平台实测**全部通过**（2026-09-29）。真实数据（9 台车、status 映射、全车返回）在此前联调中已证实。
   - _Requirements: 2.1, 2.2, 3.1, 3.2, 6.3_
   - _Depends on: 5, 7, 8_
