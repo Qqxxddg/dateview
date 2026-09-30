@@ -60,7 +60,7 @@
     4. **空/错降级**：返回空数组或异常时返回占位行 `{amr_code: '-', status: '暂无数据'}`（若任务 8 验证组件内置空态合格则省略占位行）。
     5. **防抖动**：比较新旧行序列，内容一致时返回上一次同一数组引用（防刷新跳顶）。
   - 验证：控制台以 `doQueryData('SQL09091542', JSON.stringify({mapcodes:null, robotcodes:null}), 'list')` 验证入参/出参与映射纯函数（输入含 `status:'1'` 等代码 → 输出中文）；排序函数输入乱序样例 → 输出符合优先级。
-  - **实施记录**：source 已落盘（id `20260929160000001`，`params.data` 绑定 `model.mapcodes`/`model.robotcodes` 表达式，`preHandler` 再显式归一 `mapcodes`（ALL→null）并写 `model.mapcodes/date`；`postHandler` 含归一化/排序/未知排尾/空错占位行/`$model('card7Rows')` 同引用防跳顶）。行为测试 `_task5_test.js` 13 项全过（映射、排序、未知状态、空/null 降级、同引用、取参归一、多值逗号）。样例 `defaultValue` 与任务 4 着色规则保留未动。
+  - **实施记录（路线 B，组件级 source 已弃用）**：组件级 `option.sources` 实测可请求但结果不挂载（组件提示「图表关联数据为空」，`postHandler` 不执行），已改为**页面级 source + binds setData**（与改造前 `SQL1818567→#card7` 同构，双列表挂载、`preHandler: beforeSourceQuery_1`、`resultFormat: list`）。加工逻辑抽取为页面脚本 `this.applyCard7Rows(data)`（兼容 `{code,data:[…]}`/数组/list 形态，状态码→中文、`robot_code`→`amr_code`、排序、未知排尾、空错占位行、`card.setData(rows)`），binds 模板改为调用该函数；`onLoaded` 追加 `this.initCard7Now()` 立即首拉（`doQueryData('SQL09091542',…)`），消除首屏等待一个轮询周期的延迟。已用真实响应形态验证（`_task5_routeB_test.js`、`_task5_latency_test.js` 全过）；平台实测：Console `card7 rows bind` 打出 Array(9) 状态映射正确，表格可显示。
   - _Leverage: `#chargedata.option.sources` 骨架；`beforeSourceQuery_1` 取参逻辑；手册 §4.3 参数传法示例_
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 4.1, 4.2_
   - _Depends on: 3_
