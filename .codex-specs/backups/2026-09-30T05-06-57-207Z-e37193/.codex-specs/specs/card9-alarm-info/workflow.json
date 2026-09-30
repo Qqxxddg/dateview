@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "card9-alarm-info",
+  "title": "#card9 显示设备号与告警原因",
+  "description": "改造统计看板 #card9：展示设备号与设备告警原因，替代当前的设备告警次数",
+  "createdAt": "2026-09-30T01:38:27.398Z",
+  "updatedAt": "2026-09-30T02:10:01.996Z",
+  "kind": "spec",
+  "phase": "implementation",
+  "approvals": {
+    "requirements": {
+      "status": "approved",
+      "approvedAt": "2026-09-30T01:51:25.491Z"
+    },
+    "design": {
+      "status": "approved",
+      "approvedAt": "2026-09-30T01:59:54.001Z"
+    },
+    "tasks": {
+      "status": "approved",
+      "approvedAt": "2026-09-30T02:10:01.759Z"
+    }
+  }
+}
